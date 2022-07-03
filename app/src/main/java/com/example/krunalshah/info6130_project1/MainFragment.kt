@@ -3,6 +3,9 @@ package com.example.krunalshah.info6130_project1
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.TransitionDrawable
 import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -16,6 +19,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import java.util.*
 
@@ -52,6 +56,10 @@ class MainFragment : Fragment() {
     private lateinit var birdsImageView: ImageView
     private lateinit var seasonImageView: ImageView
 
+    private lateinit var wheelContainer: ConstraintLayout
+
+    var count: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -70,6 +78,8 @@ class MainFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+
+        wheelContainer = requireView().findViewById(R.id.wheelContainer)
 
         mediaPlayer = MediaPlayer.create(context,R.raw.spring_song)
         wheelImage = requireView().findViewById(R.id.wheelImageView)
@@ -126,18 +136,18 @@ class MainFragment : Fragment() {
             sunAnimation.start()
             birdsAnimation.start()
 
-//            var count = 1
-//
-//            val handler = Handler()
-//            handler.postDelayed(Runnable {
+//            Handler(Looper.getMainLooper()).postDelayed(Runnable {
 //                if (count == 1) {
-//                    cloud1ImageView.animate().apply {
-//                        rotationYBy(360f)
+//                    seasonImageView.animate().apply {
+//                        translationX(360f)
 //                    }.start()
 //                    count++
 //                }
 //            }, 5000)
 
+//            updateSeason(count)
+
+/*
             val season1 = Runnable{
                 cloud1ImageView.animate().apply {
                     rotationXBy(360f)
@@ -158,6 +168,7 @@ class MainFragment : Fragment() {
 
 //            val season1Thread = Thread(season1)
 //            season1Thread.start()
+//            season1Thread.interrupt()
 
 //            val season2Thread = Thread(season2)
 //            season2Thread.start()
@@ -167,11 +178,12 @@ class MainFragment : Fragment() {
 //
 //            val season4Thread = Thread(season2)
 //            season4Thread.start()
+*/
         }
 
-        var count = 0
-        val seasonImages = arrayOf(R.drawable.summer, R.drawable.autumn, R.drawable.winter, R.drawable.spring)
-        seasonImageView.setImageResource(seasonImages[count])
+        var id = 0
+//        val seasonImages = arrayOf(R.drawable.spring, R.drawable.summer, R.drawable.autumn, R.drawable.winter)
+//        seasonImageView.setImageResource(seasonImages[id])
 
         stopButton = requireView().findViewById(R.id.stopButton)
         stopButton.setOnClickListener {
@@ -188,20 +200,76 @@ class MainFragment : Fragment() {
             fadeIn.interpolator = DecelerateInterpolator()
             fadeIn.duration = 1000
 
-            if (count == 0) {
+            if (id == 0) {
+                val color = arrayOf(ColorDrawable(Color.parseColor("#FF4500")), ColorDrawable(Color.parseColor("#8FBC8F")))
+                val colorTransition = TransitionDrawable(color)
+                wheelContainer.setBackgroundDrawable(colorTransition)
+                colorTransition.startTransition(2000)
+
+                val imageAnimation = AnimationUtils.loadAnimation(context, R.anim.fadein)
+                seasonImageView.startAnimation(imageAnimation)
                 seasonImageView.setImageResource(R.drawable.summer)
-                count++
-            } else if (count == 1) {
+
+                id++
+            } else if (id == 1) {
+                val color = arrayOf(ColorDrawable(Color.parseColor("#8FBC8F")), ColorDrawable(Color.parseColor("#FFFF00")))
+                val colorTransition = TransitionDrawable(color)
+                wheelContainer.setBackgroundDrawable(colorTransition)
+                colorTransition.startTransition(2000)
+
+                val imageAnimation = AnimationUtils.loadAnimation(context, R.anim.fadein)
+                seasonImageView.startAnimation(imageAnimation)
                 seasonImageView.setImageResource(R.drawable.autumn)
-                count++
-            } else if (count == 2) {
+
+                id++
+            } else if (id == 2) {
+                val color = arrayOf(ColorDrawable(Color.parseColor("#FFFF00")), ColorDrawable(Color.parseColor("#FFFFFF")))
+                val colorTransition = TransitionDrawable(color)
+                wheelContainer.setBackgroundDrawable(colorTransition)
+                colorTransition.startTransition(2000)
+
+                val imageAnimation = AnimationUtils.loadAnimation(context, R.anim.fadein)
+                seasonImageView.startAnimation(imageAnimation)
                 seasonImageView.setImageResource(R.drawable.winter)
-                count++
+
+                id++
             } else {
+                val color = arrayOf(ColorDrawable(Color.parseColor("#FFFFFF")), ColorDrawable(Color.parseColor("#FF4500")))
+                val colorTransition = TransitionDrawable(color)
+                wheelContainer.setBackgroundDrawable(colorTransition)
+                colorTransition.startTransition(2000)
+
+                val imageAnimation = AnimationUtils.loadAnimation(context, R.anim.fadein)
+                seasonImageView.startAnimation(imageAnimation)
                 seasonImageView.setImageResource(R.drawable.spring)
-                count = 0
+
+                id = 0
             }
         }
+    }
+
+    private fun updateSeason(count: Int) {
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                var c = count
+
+                activity?.runOnUiThread {
+                    if (c == 0) {
+                        seasonImageView.setImageResource(R.drawable.summer)
+                        c++
+                    } else if (c == 1) {
+                        seasonImageView.setImageResource(R.drawable.autumn)
+                        c++
+                    } else if (c == 2) {
+                        seasonImageView.setImageResource(R.drawable.winter)
+                        c++
+                    } else {
+                        seasonImageView.setImageResource(R.drawable.spring)
+                        c = 0
+                    }
+                }
+            }
+        }, 0, 15000)
     }
 
     private fun updateTimer() {
