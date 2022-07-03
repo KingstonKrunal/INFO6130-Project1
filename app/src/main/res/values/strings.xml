@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">INFO6130-Project1</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="krunal_shah">Krunal Shah</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="date">Date</string>
+    <string name="todo">TODO</string>
 </resources>
